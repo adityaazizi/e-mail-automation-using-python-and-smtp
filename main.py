@@ -68,11 +68,7 @@ def SendEmail():
     sender_email = ''  # your email
     sender_password = ''  # your app pasword
 
-    recipients = []
-
-    with open('receiver_list.txt', 'r') as file:
-        for line in file:
-            recipients.append(line.strip())
+    receiver_list = FiletoList()
 
     # change this into current directory
     folder_path = ''  # your attachment path
@@ -83,7 +79,7 @@ def SendEmail():
 
     message = MIMEMultipart()
     message['From'] = sender_email
-    message['To'] = ', '.join(recipients)
+    message['To'] = ', '.join(receiver_list)
     message['Subject'] = subject
 
     message.attach(MIMEText(body, 'plain'))
@@ -98,7 +94,7 @@ def SendEmail():
         server = smtplib.SMTP(smtp_server, port)
         server.starttls()
         server.login(sender_email, sender_password)
-        server.sendmail(sender_email, recipients, message.as_string())
+        server.sendmail(sender_email, receiver_list, message.as_string())
         server.quit()
 
         print('Email with attachments sent successfully!')
