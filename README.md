@@ -27,7 +27,24 @@ git clone https://github.com/adityaazizi/e-mail-automation-using-python-and-smtp
 cd e-mail-automation-using-python-and-smtp
 ```
 
-### 2. Set Up Your Environment
+### 2. Create Virtual Environment
+
+It is recommended to create a virtual environment to manage dependencies. Run the following commands:
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+
+### Install Dependencies
+
+Once your virtual environment is activated, install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Set Up Your Environment
 
 Email Credentials:
 
@@ -45,11 +62,11 @@ Attachment path:
 
 - Ensure that all attachment files are placed in the attachment folder, or specify the path in the .env file.
 
-## 3. Prepare Your Recipient List
+### 5. Prepare Your Recipient List
 
 Add the email addresses of recipients in the receiver_list.txt file, with each email on a new line
 
-## 4. Run the Program
+### 6. Run the Program
 
 After setting everything up, you can run the program with:
 
@@ -57,7 +74,7 @@ After setting everything up, you can run the program with:
 python main.py
 ```
 
-## 5. Follow the CLI Instructions
+### 7. Follow the CLI Instructions
 
 The program will guide you through adding, viewing, updating, and deleting recipients, as well as sending emails.
 
