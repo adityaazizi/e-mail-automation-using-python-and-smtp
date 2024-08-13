@@ -1,39 +1,79 @@
 # E-Mail Automation using Python
 
-I created this project after learning programming with Python as an implementation of the basic knowledge and concepts I have acquired. With this program, we can send emails with a subject, attachment, and of course, the message content automatically to multiple recipients listed in `receiver_list.txt`. Of course, this program can only run on the CLI for now, and I might add a UI to make it more user-friendly in the future.
+This project is a practical implementation of basic Python programming concepts that I learned during my initial stages of learning. The program automates the process of sending emails, including subjects, attachments, and message content, to multiple recipients listed in receiver_list.txt. Currently, it runs on the command-line interface (CLI), but there are plans to add a graphical user interface (GUI) in the future to enhance user-friendliness.
 
-## Steps to Run the Program
+## Features
 
-1. **Clone this repository to your device:**
+- Send emails with subject, body, and attachments.
+- Manage recipients through a text file.
+- Command-line interface for simplicity.
 
-   ```bash
-   git clone https://github.com/your-username/email-sender.git
-   cd email-sender
-   ```
+## Prerequisites
 
-2. **Fill in the required information:**
+- Python 3.x installed on your machine.
+- A Gmail account to send emails.
+- Basic knowledge of using the command line.
 
-   - Open the `email_sender.py` file and provide your email username.
-   - Create an app password following the steps [here](https://support.google.com/mail/answer/185833?hl=en).
-   - Specify the attachment path if needed.
+## Getting Started
 
-3. **Prepare Attachments:**
-   If using an attachment, make sure all attachment files are placed in the `attachment` folder.
+Follow these steps to set up and run the program:
 
-4. **Run the Program:**
+### 1. Clone the Repository
 
-   ```bash
-   python email_sender.py
-   ```
+First, clone this repository to your local device:
 
-5. **Once everything is ready, run the program, and the email will be sent to all recipients listed in `receiver_list.txt`.**
+```bash
+git clone https://github.com/adityaazizi/e-mail-automation-using-python-and-smtp.git
+cd e-mail-automation-using-python-and-smtp
+```
 
-## Future Updates
+### 2. Set Up Your Environment
 
-I am planning to add a user-friendly UI to make the program more accessible in the future. Stay tuned for updates!
+Email Credentials:
+
+- Create a .env file in the project root directory and add your email credentials:
+
+```bash
+SENDER_EMAIL='your-email@gmail.com'
+SENDER_PASSWORD='your-app-password'
+ATTACHMENT_PATH='attachment'
+```
+
+- Follow the instructions [here](https://support.google.com/mail/answer/185833?hl=en) to create an app password for your Gmail account.
+
+Attachment path:
+
+- Ensure that all attachment files are placed in the attachment folder, or specify the path in the .env file.
+
+## 3. Prepare Your Recipient List
+
+Add the email addresses of recipients in the receiver_list.txt file, with each email on a new line
+
+## 4. Run the Program
+
+After setting everything up, you can run the program with:
+
+```bash
+python main.py
+```
+
+## 5. Follow the CLI Instructions
+
+The program will guide you through adding, viewing, updating, and deleting recipients, as well as sending emails.
+
+## Future Plans
+
+- Graphical User Interface (GUI): A future update will include a GUI to make the application more accessible and user-friendly.
+- Enhanced Features: Additional features like scheduling emails, logging sent emails, and more.
+
+## Contribution
+
+Feel free to contribute to this project by forking the repository, making your changes, and submitting a pull request.
 
 ## Contact
 
-If you have any criticism or suggestions, contact me at [azizi.business@gmail.com](mailto:azizi.business@gmail.com).
+If you have any feedback, suggestions, or questions, feel free to reach out:
 
-Good luck! 😊
+email: azizi.business@gmail.com
+
+Good Luck! 😊

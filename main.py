@@ -4,139 +4,140 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+from typing import List
+
+from dotenv import load_dotenv
+load_dotenv()
+
+SMTP_SERVER = 'smtp.gmail.com'
+PORT = 587
+
+SENDER_EMAIL = os.getenv('SENDER_EMAIL')
+SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
+FOLDER_PATH = os.getenv('ATTACHMENT_PATH', 'attachment')
+
+RECEIVER_LIST_FILE = 'receiver_list.txt'
 
 
-def FiletoList():
-    receiver_list = []
-    with open('receiver_list.txt', 'r') as file:
-        for line in file:
-            receiver_list.append(line.strip())
-    return receiver_list
+def read_receiver_list() -> List[str]:
+    with open(RECEIVER_LIST_FILE, 'r') as file:
+        return [line.strip() for line in file]
 
 
-def ListtoFile(receiver_list):
-    with open('receiver_list.txt', 'w') as file:
-        for line in receiver_list:
-            file.write(line + '\n')
+def write_receiver_list(receiver_list: List[str]) -> None:
+    with open(RECEIVER_LIST_FILE, 'w') as file:
+        file.writelines(f'{line}\n' for line in receiver_list)
 
 
-def CreateList():
-    new_receiver = input("Input new receiver: ")
-    with open('receiver_list.txt', 'a') as file:
-        file.write(f'\n{new_receiver}')
+def add_receiver() -> None:
+    new_receiver = input("Input new receiver: ").strip()
+    with open(RECEIVER_LIST_FILE, 'a') as file:
+        file.write(f'{new_receiver}\n')
     print('New receiver successfully added.')
-    ReadList()
+    list_receivers()
 
 
-def ReadList():
-    with open('receiver_list.txt', 'r') as file:
-        numb = 1
-        for line in file:
-            print(f'{numb}. {line}', end='')
-            numb += 1
+def list_receivers() -> None:
+    with open(RECEIVER_LIST_FILE, 'r') as file:
+        for i, line in enumerate(file, start=1):
+            print(f'{i}. {line.strip()}')
 
 
-def UpdateList():
-    ReadList()
-
-    receiver_list = FiletoList()
-    print("\n")
-    item = int(input("Which item you want to update: "))
-
-    receiver_list[item-1] = input("Input new value: ")
-    ListtoFile(receiver_list)
-
-    ReadList()
-
-
-def DeleteList():
-    ReadList()
-    receiver_list = FiletoList()
-
-    print("\n")
-    item = int(input("Which item you want to delete: "))
-
-    receiver_list.pop(item-1)
-    ListtoFile(receiver_list)
-
-    ReadList()
-
-
-def SendEmail():
-    smtp_server = 'smtp.gmail.com'
-    port = 587  # For TLS
-    sender_email = ''  # your email
-    sender_password = ''  # your app pasword
-
-    receiver_list = FiletoList()
-
-    # change this into current directory
-    folder_path = ''  # your attachment path
-    attachment_files = glob.glob(os.path.join(folder_path, '*'))
-
-    subject = input("Insert your subject here: ")
-    body = input("Insert your message here: ")
-
-    message = MIMEMultipart()
-    message['From'] = sender_email
-    message['To'] = ', '.join(receiver_list)
-    message['Subject'] = subject
-
-    message.attach(MIMEText(body, 'plain'))
-
-    for file_path in attachment_files:
-        with open(file_path, 'rb') as file:
-            part = MIMEApplication(file.read(), Name=file_path)
-        part['Content-Disposition'] = f'attachment; filename="{file_path}"'
-        message.attach(part)
+def update_receiver() -> None:
+    receiver_list = read_receiver_list()
+    list_receivers()
 
     try:
-        server = smtplib.SMTP(smtp_server, port)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, receiver_list, message.as_string())
-        server.quit()
+        item = int(input("Which item you want to update: ")) - 1
+        receiver_list[item] = input("Input new value: ").strip()
+        write_receiver_list(receiver_list)
+        print("Receiver updated successfully.")
+    except (IndexError, ValueError):
+        print("Invalid selection.")
 
-        print('Email with attachments sent successfully!')
-
-    except Exception as e:
-        print(f'Error: {str(e)}')
+    list_receivers()
 
 
-if __name__ == "__main__":
+def delete_receiver() -> None:
+    receiver_list = read_receiver_list()
+    list_receivers()
+
+    try:
+        item = int(input("Which item you want to delete: ")) - 1
+        receiver_list.pop(item)
+        write_receiver_list(receiver_list)
+        print("Receiver deleted successfully.")
+    except (IndexError, ValueError):
+        print("Invalid selection.")
+
+    list_receivers()
+
+
+def send_email() -> None:
+    receiver_list = read_receiver_list()
+    attachment_files = glob.glob(os.path.join(FOLDER_PATH, '*'))
+
+    subject = input("Insert your subject here: ").strip()
+    body = input("Insert your message here: ").strip()
+
+    for receiver in receiver_list:
+        message = MIMEMultipart()
+        message['From'] = SENDER_EMAIL
+        message['To'] = receiver
+        message['Subject'] = subject
+        message.attach(MIMEText(body, 'plain'))
+
+        for file_path in attachment_files:
+            with open(file_path, 'rb') as file:
+                part = MIMEApplication(
+                    file.read(),
+                    Name=os.path.basename(file_path)
+                )
+            part['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+            message.attach(part)
+
+        try:
+            with smtplib.SMTP(SMTP_SERVER, PORT) as server:
+                server.starttls()
+                server.login(SENDER_EMAIL, SENDER_PASSWORD)
+                server.sendmail(SENDER_EMAIL, receiver, message.as_string())
+            print(f'Email sent successfully to {receiver}!')
+        except Exception as e:
+            print(f'Error sending email to {receiver}: {e}')
+
+
+def main():
+
+    options = {
+        1: add_receiver,
+        2: list_receivers,
+        3: update_receiver,
+        4: delete_receiver,
+        5: send_email,
+        6: exit
+    }
+
     while True:
-        print(
-            """
-
+        print("""
             Welcome, please choose an option:
-
             1. Add a recipient to the list.
             2. View the list of recipients.
             3. Edit the recipient list.
             4. Remove a recipient from the list.
-            5. Send an email to list.
+            5. Send an email to the list.
             6. Exit.
-            """
-        )
+        """)
 
-        answer = int(input("Insert menu (number only): "))
+        try:
+            choice = int(input("Insert menu (number only): "))
+            action = options.get(choice)
+            if action:
+                action()
+            else:
+                print("Please input a valid number from the menu.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
-        if answer == 1:
-            CreateList()
 
-        elif answer == 2:
-            ReadList()
-
-        elif answer == 3:
-            UpdateList()
-
-        elif answer == 4:
-            DeleteList()
-
-        elif answer == 5:
-            SendEmail()
-
-        elif answer == 6:
-            break
-        else:
-            print("Please input number from menu.")
+if __name__ == "__main__":
+    main()
